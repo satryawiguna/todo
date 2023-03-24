@@ -9,6 +9,9 @@ namespace ToDo.Datas
 		{
 
 		}
+
+		public DbSet<Todo> Todos { get; set; }
+		public DbSet<TodoType> TodoTypes { get; set; }
 	}
 }
 
