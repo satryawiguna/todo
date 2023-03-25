@@ -4,13 +4,15 @@ using ToDo.Datas;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var x = builder.Configuration.GetConnectionString("TodoDbConnectionString");
+
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("TodoDbConnectionString");
 builder.Services.AddDbContext<TodoDbContext>(options =>
 {
-    var serverVersion = new MySqlServerVersion(new Version(8, 0));
+    var connectionString = builder.Configuration.GetConnectionString("TodoDbConnectionString");
+    var serverVersion = ServerVersion.AutoDetect(connectionString);
 
-    options.UseMySql(connectionString, serverVersion, dbOption => dbOption.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+    options.UseMySql(connectionString, serverVersion);
 });
 
 builder.Services.AddControllers();
