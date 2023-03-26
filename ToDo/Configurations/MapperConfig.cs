@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using ToDo.Datas;
+using ToDo.Models.Todo;
 using ToDo.Models.TodoType;
 
 namespace ToDo.Configurations
@@ -10,7 +11,11 @@ namespace ToDo.Configurations
 		public MapperConfig()
 		{
 			CreateMap<TodoType, CreateTodoTypeDto>().ReverseMap();
-		}
+			CreateMap<TodoType, TodoTypeDto>().ReverseMap();
+            CreateMap<TodoType, TodoTypeWithTodoDto>().ReverseMap();
+
+            CreateMap<Todo, TodoDto>().ReverseMap();
+        }
 	}
 }
 

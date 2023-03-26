@@ -26,28 +26,45 @@ namespace ToDo.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoType>>> AllTodoType()
+        public async Task<ActionResult<IEnumerable<TodoTypeDto>>> AllTodoType()
         {
             var todoTypes = await _todoDbContext.TodoTypes.ToListAsync();
 
-            return Ok(todoTypes);
+            var todoTypeDtos = _mapper.Map<List<TodoTypeDto>>(todoTypes);
+
+            return Ok(todoTypeDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoType>> GetTodoType(int id)
+        public async Task<ActionResult<TodoTypeDto>> GetTodoType(int id)
         {
             var todoType = await _todoDbContext.TodoTypes.FindAsync(id);
 
             if (todoType == null)
                 return NotFound();
 
-            return Ok(todoType);
+            var todoTypeDto = _mapper.Map<TodoTypeDto>(todoType);
+
+            return Ok(todoTypeDto);
+        }
+
+        [HttpGet("{id}/todo")]
+        public async Task<ActionResult<TodoTypeWithTodoDto>> GetTodoTypeWithTodo(int id)
+        {
+            var todoType = await _todoDbContext.TodoTypes.Include(q => q.Todos).FirstOrDefaultAsync(q => q.Id == id);
+
+            if (todoType == null)
+                return NotFound();
+
+            var todoTypeDto = _mapper.Map<TodoTypeWithTodoDto>(todoType);
+
+            return Ok(todoTypeDto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoType>> StoreTodoType(CreateTodoTypeDto createTodoType)
+        public async Task<ActionResult<TodoType>> StoreTodoType(CreateTodoTypeDto createTodoTypeDto)
         {
-            var todoType = _mapper.Map<TodoType>(createTodoType);
+            var todoType = _mapper.Map<TodoType>(createTodoTypeDto);
 
             _todoDbContext.TodoTypes.Add(todoType);
 
