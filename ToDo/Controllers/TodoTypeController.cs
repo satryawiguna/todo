@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Datas;
+using ToDo.Models.TodoType;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,10 +17,12 @@ namespace ToDo.Controllers
     public class TodoTypeController : ControllerBase
     {
         private readonly TodoDbContext _todoDbContext;
+        private readonly IMapper _mapper;
 
-        public TodoTypeController(TodoDbContext todoDbContext)
+        public TodoTypeController(TodoDbContext todoDbContext, IMapper mapper)
         {
             _todoDbContext = todoDbContext;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -41,8 +45,10 @@ namespace ToDo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoType>> StoreTodoType(TodoType todoType)
+        public async Task<ActionResult<TodoType>> StoreTodoType(CreateTodoTypeDto createTodoType)
         {
+            var todoType = _mapper.Map<TodoType>(createTodoType);
+
             _todoDbContext.TodoTypes.Add(todoType);
 
             await _todoDbContext.SaveChangesAsync();
