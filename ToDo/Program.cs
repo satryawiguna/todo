@@ -1,8 +1,20 @@
-﻿using Serilog;
+﻿using Microsoft.EntityFrameworkCore;
+using Serilog;
+using ToDo.Configurations;
+using ToDo.Datas;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var x = builder.Configuration.GetConnectionString("TodoDbConnectionString");
+
 // Add services to the container.
+builder.Services.AddDbContext<TodoDbContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("TodoDbConnectionString");
+    var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+    options.UseMySql(connectionString, serverVersion);
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -19,6 +31,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 var app = builder.Build();
 
