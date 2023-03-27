@@ -2,6 +2,8 @@
 using Serilog;
 using ToDo.Configurations;
 using ToDo.Datas;
+using ToDo.Repository;
+using ToDo.Repository.Contract;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,9 @@ builder.Services.AddCors(options =>
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
+builder.Services.AddScoped<ITodoTypeRepository, TodoTypeRepository>();
 
 var app = builder.Build();
 
