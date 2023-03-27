@@ -62,7 +62,7 @@ namespace ToDo.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoType>> StoreTodoType(CreateTodoTypeDto createTodoTypeDto)
+        public async Task<ActionResult<TodoTypeDto>> StoreTodoType(CreateTodoTypeDto createTodoTypeDto)
         {
             var todoType = _mapper.Map<TodoType>(createTodoTypeDto);
 
@@ -70,16 +70,22 @@ namespace ToDo.Controllers
 
             await _todoDbContext.SaveChangesAsync();
 
-            return CreatedAtAction("GetTodoType", new { id = todoType.Id, title = todoType.Title });
+            return CreatedAtAction("GetTodoType", new { id = todoType.Id }, todoType);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<TodoType>> UpdateTodoType(int id, TodoType todoType)
+        public async Task<ActionResult<TodoTypeDto>> UpdateTodoType(int id, UpdateTodoTypeDto updateTodoTypeDto)
         {
-            if (id != todoType.Id)
+            if (id != updateTodoTypeDto.Id)
                 return BadRequest("Ivalid record Id");
 
-            _todoDbContext.Entry(todoType).State = EntityState.Modified;
+            //_todoDbContext.Entry(todoType).State = EntityState.Modified;
+            var todoType = await _todoDbContext.TodoTypes.FindAsync(id);
+
+            if (todoType == null)
+                return NotFound();
+
+            _mapper.Map(updateTodoTypeDto, todoType);
 
             try
             {
