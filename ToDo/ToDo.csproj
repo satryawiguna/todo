@@ -26,6 +26,8 @@
     <None Remove="Models\TodoType\" />
     <None Remove="Configurations\" />
     <None Remove="Models\Todo\" />
+    <None Remove="Repository\" />
+    <None Remove="Repository\Contract\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Datas\" />
@@ -33,5 +35,7 @@
     <Folder Include="Models\TodoType\" />
     <Folder Include="Configurations\" />
     <Folder Include="Models\Todo\" />
+    <Folder Include="Repository\" />
+    <Folder Include="Repository\Contract\" />
   </ItemGroup>
 </Project>

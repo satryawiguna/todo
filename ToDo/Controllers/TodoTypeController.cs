@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Datas;
 using ToDo.Models.TodoType;
+using ToDo.Repository.Contract;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,20 +16,21 @@ namespace ToDo.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class TodoTypeController : ControllerBase
-    {
-        private readonly TodoDbContext _todoDbContext;
+    { 
         private readonly IMapper _mapper;
 
-        public TodoTypeController(TodoDbContext todoDbContext, IMapper mapper)
+        private readonly ITodoTypeRepository _todoTypeRepository;
+
+        public TodoTypeController(IMapper mapper, ITodoTypeRepository todoTypeRepository)
         {
-            _todoDbContext = todoDbContext;
             _mapper = mapper;
+            _todoTypeRepository = todoTypeRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoTypeDto>>> AllTodoType()
         {
-            var todoTypes = await _todoDbContext.TodoTypes.ToListAsync();
+            var todoTypes = _todoTypeRepository.GetAllAsync();
 
             var todoTypeDtos = _mapper.Map<List<TodoTypeDto>>(todoTypes);
 
@@ -38,7 +40,7 @@ namespace ToDo.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoTypeDto>> GetTodoType(int id)
         {
-            var todoType = await _todoDbContext.TodoTypes.FindAsync(id);
+            var todoType = _todoTypeRepository.GetAsync(id);
 
             if (todoType == null)
                 return NotFound();
@@ -51,7 +53,7 @@ namespace ToDo.Controllers
         [HttpGet("{id}/todo")]
         public async Task<ActionResult<TodoTypeWithTodoDto>> GetTodoTypeWithTodo(int id)
         {
-            var todoType = await _todoDbContext.TodoTypes.Include(q => q.Todos).FirstOrDefaultAsync(q => q.Id == id);
+            var todoType = await _todoTypeRepository.GetWithTodoAsync(id);
 
             if (todoType == null)
                 return NotFound();
@@ -66,9 +68,7 @@ namespace ToDo.Controllers
         {
             var todoType = _mapper.Map<TodoType>(createTodoTypeDto);
 
-            _todoDbContext.TodoTypes.Add(todoType);
-
-            await _todoDbContext.SaveChangesAsync();
+            await _todoTypeRepository.CreateAsync(todoType);
 
             return CreatedAtAction("GetTodoType", new { id = todoType.Id }, todoType);
         }
@@ -80,7 +80,7 @@ namespace ToDo.Controllers
                 return BadRequest("Ivalid record Id");
 
             //_todoDbContext.Entry(todoType).State = EntityState.Modified;
-            var todoType = await _todoDbContext.TodoTypes.FindAsync(id);
+            var todoType = await _todoTypeRepository.GetAsync(id);
 
             if (todoType == null)
                 return NotFound();
@@ -89,7 +89,7 @@ namespace ToDo.Controllers
 
             try
             {
-                await _todoDbContext.SaveChangesAsync();
+                await _todoTypeRepository.UpdateAsync(todoType);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -109,21 +109,19 @@ namespace ToDo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var todoType = await _todoDbContext.TodoTypes.FindAsync(id);
+            var todoType = await _todoTypeRepository.GetAsync(id);
 
             if (todoType == null)
                 return NotFound();
 
-            _todoDbContext.TodoTypes.Remove(todoType);
-
-            await _todoDbContext.SaveChangesAsync();
+            await _todoTypeRepository.DeleteAsync(id);
 
             return NoContent();
         }
 
         private async Task<bool> TodoTypeExists(int id)
         {
-            return await _todoDbContext.TodoTypes.FindAsync(id) != null;
+            return await _todoTypeRepository.IsExists(id);
         }
     }
 }
