@@ -39,6 +39,16 @@ namespace ToDo.Controllers
             return Ok(todoDtos);
         }
 
+        [HttpGet("todoType")]
+        public async Task<ActionResult<IEnumerable<TodoWithTodoTypeDto>>> AllTodoWithTodoType()
+        {
+            var todos = await _todoRepository.GetAllWithTodoTypeAsync();
+
+            var todoWithTodoTypeDtos = _mapper.Map<List<TodoWithTodoTypeDto>>(todos);
+
+            return Ok(todoWithTodoTypeDtos);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoDto>> GetTodo(int id)
         {
@@ -60,9 +70,9 @@ namespace ToDo.Controllers
             if (todo == null)
                 return NotFound();
 
-            var todoDto = _mapper.Map<TodoWithTodoTypeDto>(todo);
+            var todoWithTodoTypeDtos = _mapper.Map<TodoWithTodoTypeDto>(todo);
 
-            return Ok(todoDto);
+            return Ok(todoWithTodoTypeDtos);
         }
 
         [HttpPost]

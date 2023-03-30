@@ -11,7 +11,12 @@ namespace ToDo.Repository
 
         public TodoRepository(TodoDbContext context) : base(context)
         {
-            this._context = context;
+            _context = context;
+        }
+
+        public async Task<List<Todo>> GetAllWithTodoTypeAsync()
+        {
+            return await _context.Todos.Include(q => q.TodoType).ToListAsync();
         }
 
         public async Task<Todo> GetWithTodoTypeAsync(int? id)
@@ -19,7 +24,7 @@ namespace ToDo.Repository
             if (id == null)
                 return null;
 
-            return await this._context.Todos.Include(q => q.TodoType).FirstOrDefaultAsync(q => q.Id == id);
+            return await _context.Todos.Include(q => q.TodoType).FirstOrDefaultAsync(q => q.Id == id);
         }
     }
 }
