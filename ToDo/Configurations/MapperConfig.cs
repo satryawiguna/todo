@@ -15,7 +15,10 @@ namespace ToDo.Configurations
             CreateMap<TodoType, TodoTypeDto>().ReverseMap();
             CreateMap<TodoType, TodoTypeWithTodoDto>().ReverseMap();
 
+            CreateMap<Todo, CreateTodoDto>().ReverseMap();
+            CreateMap<Todo, UpdateTodoDto>().ReverseMap();
             CreateMap<Todo, TodoDto>().ReverseMap();
+            CreateMap<Todo, TodoWithTodoTypeDto>().ReverseMap();
         }
 	}
 }

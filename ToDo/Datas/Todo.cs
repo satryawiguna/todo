@@ -11,6 +11,7 @@ namespace ToDo.Datas
 
 		public string Description { get; set; }
 
+
 		[ForeignKey(nameof(TodoTypeId))]
 		public int TodoTypeId { get; set; }
 
