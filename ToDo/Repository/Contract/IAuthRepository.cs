@@ -7,6 +7,8 @@ namespace ToDo.Repository.Contract
     public interface IAuthRepository
 	{
         Task<IEnumerable<IdentityError>> Register(RegisterDto registerDto);
+
+        Task<bool> Login(LoginDto loginDto);
     }
 }
 
