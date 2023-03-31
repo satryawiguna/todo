@@ -18,6 +18,20 @@ namespace ToDo.Repository
             this._userManager = userManager;
         }
 
+        public async Task<bool> Login(LoginDto loginDto)
+        {
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            bool isValidUser = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+
+            if (user is null || isValidUser)
+            {
+                return false;
+            }
+
+
+            return true;
+        }
+
         public async Task<IEnumerable<IdentityError>> Register(RegisterDto registerDto)
         {
             var user = this._mapper.Map<User>(registerDto);
@@ -32,6 +46,8 @@ namespace ToDo.Repository
 
             return result.Errors;
         }
+
+
     }
 }
 
