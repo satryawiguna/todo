@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Datas;
@@ -30,9 +31,19 @@ namespace ToDo.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoTypeDto>>> AllTodoType()
         {
-            var todoTypes = _todoTypeRepository.GetAllAsync();
+            var todoTypes = await _todoTypeRepository.GetAllAsync();
 
             var todoTypeDtos = _mapper.Map<List<TodoTypeDto>>(todoTypes);
+
+            return Ok(todoTypeDtos);
+        }
+
+        [HttpGet("todo")]
+        public async Task<ActionResult<IEnumerable<TodoTypeWithTodoDto>>> AllTodoTypeWithTodo()
+        {
+            var todoTypes = await _todoTypeRepository.GetAllWithTodoAsync();
+
+            var todoTypeDtos = _mapper.Map<List<TodoTypeWithTodoDto>>(todoTypes);
 
             return Ok(todoTypeDtos);
         }
@@ -40,7 +51,7 @@ namespace ToDo.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoTypeDto>> GetTodoType(int id)
         {
-            var todoType = _todoTypeRepository.GetAsync(id);
+            var todoType = await _todoTypeRepository.GetAsync(id);
 
             if (todoType == null)
                 return NotFound();

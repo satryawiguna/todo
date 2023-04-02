@@ -14,12 +14,21 @@ namespace ToDo.Repository
             this._context = context;
         }
 
+        public async Task<List<TodoType>> GetAllWithTodoAsync()
+        {
+            var result = await _context.TodoTypes.Include(q => q.Todos).ToListAsync();
+
+            return result;
+        }
+
         public async Task<TodoType> GetWithTodoAsync(int? id)
         {
             if (id == null)
                 return null;
 
-            return await this._context.TodoTypes.Include(q => q.Todos).FirstOrDefaultAsync(q => q.Id == id);
+            var result = await this._context.TodoTypes.Include(q => q.Todos).FirstOrDefaultAsync(q => q.Id == id); await this._context.TodoTypes.Include(q => q.Todos).FirstOrDefaultAsync(q => q.Id == id);
+
+            return result;
         }
     }
 }
