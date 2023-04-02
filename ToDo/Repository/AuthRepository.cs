@@ -32,7 +32,7 @@ namespace ToDo.Repository
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             bool isValidUser = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
-            if (user is null || isValidUser)
+            if (user is null || !isValidUser)
             {
                 return null;
             }
