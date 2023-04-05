@@ -55,6 +55,23 @@ namespace ToDo.Controllers
 
             return Ok(loginResponse);
         }
+
+        [HttpPost]
+        [Route("refreshToken")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
+        {
+            var refreshTokenResponse = await _authRepository.VerifyRefreshToken(refreshTokenDto);
+
+            if (refreshTokenResponse is null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(refreshTokenResponse);
+        }
     }
 }
 
