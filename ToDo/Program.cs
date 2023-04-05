@@ -24,7 +24,9 @@ builder.Services.AddDbContext<TodoDbContext>(options =>
 
 builder.Services.AddIdentityCore<User>()
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<TodoDbContext>();
+    .AddTokenProvider<DataProtectorTokenProvider<User>>("ToDo")
+    .AddEntityFrameworkStores<TodoDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
 

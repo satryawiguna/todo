@@ -8,7 +8,11 @@ namespace ToDo.Repository.Contract
 	{
         Task<IEnumerable<IdentityError>> Register(RegisterDto registerDto);
 
-        Task<LoginResponseDto> Login(LoginDto loginDto);
+        Task<AuthResponseDto> Login(LoginDto loginDto);
+
+        Task<string> CreateRefreshToken();
+
+        Task<AuthResponseDto> VerifyRefreshToken(RefreshTokenDto refreshTokenDto);
     }
 }
 
