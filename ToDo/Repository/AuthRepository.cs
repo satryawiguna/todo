@@ -19,17 +19,19 @@ namespace ToDo.Repository
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthRepository> _logger;
 
         private User _user;
 
         private const string _loginProvider = "ToDo";
         private const string _refreshToken = "RefreshToken";
 
-        public AuthRepository(IMapper mapper, UserManager<User> userManager, IConfiguration configuration)
+        public AuthRepository(IMapper mapper, UserManager<User> userManager, IConfiguration configuration, ILogger<AuthRepository> logger)
         {
             this._mapper = mapper;
             this._userManager = userManager;
             this._configuration = configuration;
+            this._logger = logger;
         }
 
         public async Task<AuthResponseDto> Login(LoginDto loginDto)
@@ -43,6 +45,7 @@ namespace ToDo.Repository
             }
 
             var token = await GenerateToken();
+            _logger.LogInformation($"Token was generated: {token}");
 
 
             return new AuthResponseDto
