@@ -19,13 +19,14 @@ namespace ToDo.Controllers
     public class TodoTypeController : ControllerBase
     { 
         private readonly IMapper _mapper;
-
         private readonly ITodoTypeRepository _todoTypeRepository;
+        private readonly ILogger<TodoTypeController> _logger;
 
-        public TodoTypeController(IMapper mapper, ITodoTypeRepository todoTypeRepository)
+        public TodoTypeController(IMapper mapper, ITodoTypeRepository todoTypeRepository, ILogger<TodoTypeController> logger)
         {
             _mapper = mapper;
             _todoTypeRepository = todoTypeRepository;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -53,8 +54,12 @@ namespace ToDo.Controllers
         {
             var todoType = await _todoTypeRepository.GetAsync(id);
 
-            if (todoType == null)
+            if (todoType is null)
+            {
+                _logger.LogWarning($"No record found in {nameof(GetTodoType)} with ID: {id}");
+
                 return NotFound();
+            }
 
             var todoTypeDto = _mapper.Map<TodoTypeDto>(todoType);
 

@@ -11,10 +11,12 @@ namespace ToDo.Controllers
     public class MembershipController : ControllerBase
     {
         private readonly IAuthRepository _authRepository;
+        private readonly ILogger<MembershipController> _logger;
 
-        public MembershipController(IAuthRepository authRepository)
+        public MembershipController(IAuthRepository authRepository, ILogger<MembershipController> logger)
         {
             this._authRepository = authRepository;
+            this._logger = logger;
         }
 
         [HttpPost]
@@ -24,19 +26,32 @@ namespace ToDo.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var errors = await _authRepository.Register(registerDto);
+            _logger.LogInformation($"Registration attempt for {registerDto.Email}");
 
-            if (errors.Any())
+            try
             {
-                foreach (var error in errors)
+                var errors = await _authRepository.Register(registerDto);
+
+                if (errors.Any())
                 {
-                    ModelState.AddModelError(error.Code, error.Description);
+                    foreach (var error in errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+
+                    return BadRequest(ModelState);
                 }
 
-                return BadRequest(ModelState);
+                return Ok(registerDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(Register)} - User registration attempt for {registerDto.Email}");
+
+                return Problem($"Something went wrong in the {nameof(Register)}, Please contact support", statusCode: 500);
             }
 
-            return Ok(registerDto);
+            
         }
 
         [HttpPost]
@@ -46,14 +61,25 @@ namespace ToDo.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var loginResponse = await _authRepository.Login(loginDto);
+            _logger.LogInformation($"Login attempt for {loginDto.Email}");
 
-            if (loginResponse is null)
+            try
             {
-                return Unauthorized();
-            }
+                var loginResponse = await _authRepository.Login(loginDto);
 
-            return Ok(loginResponse);
+                if (loginResponse is null)
+                {
+                    return Unauthorized();
+                }
+
+                return Ok(loginResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Something went wrong in the {nameof(Register)}");
+
+                return Problem($"Something went wrong in the {nameof(Register)}", statusCode: 500);
+            }
         }
 
         [HttpPost]
