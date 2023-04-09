@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using ToDo.Configurations;
 using ToDo.Datas;
+using ToDo.Middleware;
 using ToDo.Repository;
 using ToDo.Repository.Contract;
 
@@ -79,6 +80,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseSerilogRequestLogging();
 

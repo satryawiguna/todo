@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Datas;
+using ToDo.Exceptions;
 using ToDo.Models.Todo;
-using ToDo.Models.TodoType;
-using ToDo.Repository;
 using ToDo.Repository.Contract;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -57,7 +52,7 @@ namespace ToDo.Controllers
             var todo = await _todoRepository.GetAsync(id);
 
             if (todo == null)
-                return NotFound();
+                throw new NotFoundException(nameof(GetTodo), id);
 
             var todoDto = _mapper.Map<TodoDto>(todo);
 
@@ -70,7 +65,7 @@ namespace ToDo.Controllers
             var todo = await _todoRepository.GetWithTodoTypeAsync(id);
 
             if (todo == null)
-                return NotFound();
+                throw new NotFoundException(nameof(GetTodoWithTodoType), id);
 
             var todoWithTodoTypeDtos = _mapper.Map<TodoWithTodoTypeDto>(todo);
 
@@ -93,13 +88,13 @@ namespace ToDo.Controllers
         public async Task<ActionResult<TodoDto>> UpdateTodo(int id, UpdateTodoDto updateTodoDto)
         {
             if (id != updateTodoDto.Id)
-                return BadRequest("Ivalid record Id");
+                throw new BadRequestException(nameof(UpdateTodo), id);
 
             //_todoDbContext.Entry(todoType).State = EntityState.Modified;
             var todo = await _todoRepository.GetAsync(id);
 
             if (todo == null)
-                return NotFound();
+                throw new NotFoundException(nameof(Delete), id);
 
             _mapper.Map(updateTodoDto, todo);
 
@@ -128,7 +123,7 @@ namespace ToDo.Controllers
             var todo = await _todoRepository.GetAsync(id);
 
             if (todo == null)
-                return NotFound();
+                throw new NotFoundException(nameof(Delete), id);
 
             await _todoRepository.DeleteAsync(id);
 
