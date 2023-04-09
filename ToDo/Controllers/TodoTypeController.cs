@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Datas;
+using ToDo.Exceptions;
 using ToDo.Models.TodoType;
 using ToDo.Repository.Contract;
 
@@ -55,11 +56,7 @@ namespace ToDo.Controllers
             var todoType = await _todoTypeRepository.GetAsync(id);
 
             if (todoType is null)
-            {
-                _logger.LogWarning($"No record found in {nameof(GetTodoType)} with ID: {id}");
-
-                return NotFound();
-            }
+                throw new NotFoundException(nameof(GetTodoType), id);
 
             var todoTypeDto = _mapper.Map<TodoTypeDto>(todoType);
 
@@ -71,8 +68,8 @@ namespace ToDo.Controllers
         {
             var todoType = await _todoTypeRepository.GetWithTodoAsync(id);
 
-            if (todoType == null)
-                return NotFound();
+            if (todoType is null)
+                throw new NotFoundException(nameof(GetTodoType), id);
 
             var todoTypeDto = _mapper.Map<TodoTypeWithTodoDto>(todoType);
 
@@ -93,31 +90,20 @@ namespace ToDo.Controllers
         public async Task<ActionResult<TodoTypeDto>> UpdateTodoType(int id, UpdateTodoTypeDto updateTodoTypeDto)
         {
             if (id != updateTodoTypeDto.Id)
-                return BadRequest("Ivalid record Id");
+                throw new BadRequestException(nameof(UpdateTodoType), id);
 
             //_todoDbContext.Entry(todoType).State = EntityState.Modified;
             var todoType = await _todoTypeRepository.GetAsync(id);
 
-            if (todoType == null)
-                return NotFound();
+            if (todoType is null)
+                throw new NotFoundException(nameof(UpdateTodoType), id);
 
             _mapper.Map(updateTodoTypeDto, todoType);
 
-            try
-            {
-                await _todoTypeRepository.UpdateAsync(todoType);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await TodoTypeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (!await TodoTypeExists(id))
+                throw new DbUpdateConcurrencyException(nameof(UpdateTodoType));
+
+            await _todoTypeRepository.UpdateAsync(todoType);
 
             return NoContent();
         }
@@ -128,7 +114,7 @@ namespace ToDo.Controllers
             var todoType = await _todoTypeRepository.GetAsync(id);
 
             if (todoType == null)
-                return NotFound();
+                throw new NotFoundException(nameof(Delete), id);
 
             await _todoTypeRepository.DeleteAsync(id);
 
