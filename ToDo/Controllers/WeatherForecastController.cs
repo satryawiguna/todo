@@ -5,8 +5,8 @@ using System.Xml.Linq;
 namespace ToDo.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    [ApiVersion("1.0")]
+    [Route("v{version:apiVersion}/[controller]")]
+    [ApiVersion("2.0")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]

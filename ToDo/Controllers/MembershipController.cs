@@ -7,6 +7,7 @@ using ToDo.Repository.Contract;
 
 namespace ToDo.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class MembershipController : ControllerBase
     {

@@ -15,8 +15,8 @@ using ToDo.Repository.Contract;
 
 namespace ToDo.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class TodoTypeController : ControllerBase
     { 
         private readonly IMapper _mapper;
