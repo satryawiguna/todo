@@ -14,14 +14,14 @@ namespace ToDo.Controllers
     [ApiController]
     [Authorize]
     [Route("api/v{version:apiVersion}/todo")]
-    [ApiVersion("2.0")]
-    public class TodoController : ControllerBase
+    [ApiVersion("1.0", Deprecated = true)]
+    public class TodoV2Controller : ControllerBase
     {
         private readonly IMapper _mapper;
 
         private readonly ITodoRepository _todoRepository;
 
-        public TodoController(IMapper mapper, ITodoRepository todoRepository)
+        public TodoV2Controller(IMapper mapper, ITodoRepository todoRepository)
         {
             _mapper = mapper;
             _todoRepository = todoRepository;
