@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Datas;
 using ToDo.Exceptions;
+using ToDo.Models;
 using ToDo.Models.Todo;
 using ToDo.Repository.Contract;
 
@@ -12,7 +13,7 @@ using ToDo.Repository.Contract;
 namespace ToDo.Controllers
 {
     [ApiController]
-    [Authorize]
+    //[Authorize]
     [Route("api/v{version:apiVersion}/todo")]
     [ApiVersion("2.0")]
     public class TodoController : ControllerBase
@@ -27,7 +28,7 @@ namespace ToDo.Controllers
             _todoRepository = todoRepository;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<TodoDto>>> AllTodo()
         {
             var todos = await _todoRepository.GetAllAsync();
@@ -37,15 +38,23 @@ namespace ToDo.Controllers
             return Ok(todoDtos);
         }
 
-        [HttpGet("todoType")]
-        public async Task<ActionResult<IEnumerable<TodoWithTodoTypeDto>>> AllTodoWithTodoType()
+        [HttpGet("page")]
+        public async Task<ActionResult<PagedResult<TodoDto>>> AllPagedTodo([FromQuery] QueryParameter queryParameter)
         {
-            var todos = await _todoRepository.GetAllWithTodoTypeAsync();
+            var pagedTodos = await _todoRepository.GetAllAsync<TodoDto>(queryParameter);
 
-            var todoWithTodoTypeDtos = _mapper.Map<List<TodoWithTodoTypeDto>>(todos);
-
-            return Ok(todoWithTodoTypeDtos);
+            return Ok(pagedTodos);
         }
+
+        [HttpGet("todoType")]
+        public async Task<ActionResult<IEnumerable<TodoWithTodoTypeDto>>> AllPagedTodoWithTodoType([FromQuery] QueryParameter queryParameter)
+        {
+            var pagedTodos = await _todoRepository.GetAllWithTodoTypeAsync<TodoWithTodoTypeDto>(queryParameter);
+
+            return Ok(pagedTodos);
+        }
+
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoDto>> GetTodo(int id)
