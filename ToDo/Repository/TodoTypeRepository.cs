@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Datas;
 using ToDo.Repository.Contract;
@@ -9,9 +10,8 @@ namespace ToDo.Repository
     {
         private readonly TodoDbContext _context;
 
-        public TodoTypeRepository(TodoDbContext context) : base(context)
+        public TodoTypeRepository(TodoDbContext context, IMapper mapper) : base(context, mapper)
         {
-            this._context = context;
         }
 
         public async Task<List<TodoType>> GetAllWithTodoAsync()
